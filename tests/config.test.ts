@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 const KEYS = [
   "KV_REST_API_URL",
   "KV_REST_API_TOKEN",
-  "TURNSTILE_SITE_KEY",
   "TURNSTILE_SECRET_KEY",
 ] as const;
 
@@ -24,13 +23,11 @@ describe("loadConfig", () => {
   it("returns config when all envs present", async () => {
     process.env.KV_REST_API_URL = "https://example.upstash.io";
     process.env.KV_REST_API_TOKEN = "tok";
-    process.env.TURNSTILE_SITE_KEY = "site";
     process.env.TURNSTILE_SECRET_KEY = "secret";
     const { loadConfig } = await import("@/lib/config");
     expect(loadConfig()).toEqual({
       kvUrl: "https://example.upstash.io",
       kvToken: "tok",
-      turnstileSiteKey: "site",
       turnstileSecretKey: "secret",
     });
   });
@@ -46,7 +43,6 @@ describe("loadConfig", () => {
   it("throws when env is empty string", async () => {
     process.env.KV_REST_API_URL = "https://example.upstash.io";
     process.env.KV_REST_API_TOKEN = "";
-    process.env.TURNSTILE_SITE_KEY = "site";
     process.env.TURNSTILE_SECRET_KEY = "secret";
     const { loadConfig } = await import("@/lib/config");
     expect(() => loadConfig()).toThrow(/KV_REST_API_TOKEN/);

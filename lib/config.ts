@@ -1,7 +1,6 @@
 export type Config = {
   kvUrl: string;
   kvToken: string;
-  turnstileSiteKey: string;
   turnstileSecretKey: string;
 };
 
@@ -15,7 +14,6 @@ export function loadConfig(): Config {
   return {
     kvUrl: required("KV_REST_API_URL"),
     kvToken: required("KV_REST_API_TOKEN"),
-    turnstileSiteKey: required("TURNSTILE_SITE_KEY"),
     turnstileSecretKey: required("TURNSTILE_SECRET_KEY"),
   };
 }

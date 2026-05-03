@@ -20,10 +20,21 @@ export async function verifyTurnstile(
       remoteip: args.ip,
     });
     const res = await fetchFn(ENDPOINT, { method: "POST", body });
-    if (!res.ok) return false;
-    const data = (await res.json()) as { success?: boolean };
-    return data.success === true;
-  } catch {
+    if (!res.ok) {
+      console.error("[turnstile] non-ok response", res.status);
+      return false;
+    }
+    const data = (await res.json()) as {
+      success?: boolean;
+      "error-codes"?: string[];
+    };
+    if (data.success !== true) {
+      console.error("[turnstile] verify failed", data["error-codes"]);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[turnstile] fetch threw", err);
     return false;
   }
 }
