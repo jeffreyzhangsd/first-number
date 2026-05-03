@@ -29,6 +29,7 @@ declare global {
           sitekey: string;
           callback: (token: string) => void;
           "error-callback"?: () => void;
+          execution?: "render" | "execute";
         },
       ) => string;
       execute: (widgetId: string) => void;
@@ -65,6 +66,7 @@ export default function Page() {
         return;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY,
+        execution: "execute",
         callback: (token) => {
           const num = pendingNumberRef.current;
           pendingNumberRef.current = null;
