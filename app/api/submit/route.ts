@@ -14,25 +14,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  const cfg = loadConfig();
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("x-real-ip") ||
-    "0.0.0.0";
+  try {
+    const cfg = loadConfig();
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "0.0.0.0";
 
-  const result = await handleSubmit(
-    {
-      number: (body as { number?: unknown })?.number,
-      turnstileToken: (body as { turnstileToken?: unknown })?.turnstileToken,
-      ip,
-    },
-    {
-      redis: getRedis(),
-      verifyTurnstile: ({ token, ip, secret }) =>
-        verifyTurnstile({ token, ip, secret }),
-      secret: cfg.turnstileSecretKey,
-    },
-  );
+    const result = await handleSubmit(
+      {
+        number: (body as { number?: unknown })?.number,
+        turnstileToken: (body as { turnstileToken?: unknown })?.turnstileToken,
+        ip,
+      },
+      {
+        redis: getRedis(),
+        verifyTurnstile: ({ token, ip, secret }) =>
+          verifyTurnstile({ token, ip, secret }),
+        secret: cfg.turnstileSecretKey,
+      },
+    );
 
-  return NextResponse.json(result.body, { status: result.status });
+    return NextResponse.json(result.body, { status: result.status });
+  } catch {
+    return NextResponse.json({ error: "server_error" }, { status: 500 });
+  }
 }

@@ -59,6 +59,7 @@ export default function Page() {
 
   useEffect(() => {
     let cancelled = false;
+    let intervalId: number | null = null;
     const tryRender = () => {
       if (cancelled) return;
       if (!window.turnstile || !containerRef.current || widgetIdRef.current)
@@ -77,12 +78,18 @@ export default function Page() {
           setError("Bot check failed, refresh and retry.");
         },
       });
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+        intervalId = null;
+      }
     };
     tryRender();
-    const id = window.setInterval(tryRender, 200);
+    if (!widgetIdRef.current) {
+      intervalId = window.setInterval(tryRender, 200);
+    }
     return () => {
       cancelled = true;
-      window.clearInterval(id);
+      if (intervalId !== null) window.clearInterval(intervalId);
     };
   }, []);
 

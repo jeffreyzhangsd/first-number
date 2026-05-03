@@ -93,6 +93,20 @@ describe("handleSubmit", () => {
     });
   });
 
+  it("returns 503 on incr failure after hincrby succeeded", async () => {
+    const d = deps({ redisFail: "incr" });
+    const res = await handleSubmit(
+      { number: "42", turnstileToken: "t", ip: "1.2.3.4" },
+      d,
+    );
+    expect(res).toEqual({
+      status: 503,
+      body: { error: "storage_unavailable" },
+    });
+    expect(d.redis.state.hashes.get("attempts")?.get("42")).toBe(1);
+    expect(d.redis.state.counters.size).toBe(0);
+  });
+
   it("validates before turnstile (cheap check first)", async () => {
     const d = deps();
     await handleSubmit({ number: "0", turnstileToken: "t", ip: "1.2.3.4" }, d);
