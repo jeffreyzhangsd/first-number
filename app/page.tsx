@@ -195,7 +195,10 @@ export default function Page() {
         {error && <p className="text-sm text-red-600">{error}</p>}
       </form>
 
-      <div ref={containerRef} className="hidden" />
+      <div
+        ref={containerRef}
+        className="mt-4 flex justify-center empty:hidden"
+      />
 
       {result && "result" in result && (
         <div
